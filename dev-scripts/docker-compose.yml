@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine          # use an official lightweight build
+    container_name: postgres-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"                    # host:container
+    environment:
+      POSTGRES_USER:     myuser        # 👈 change me
+      POSTGRES_PASSWORD: mypassword    # 👈 change me (or load from .env)
+      POSTGRES_DB:       mydatabase    # 👈 change me
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:                             # named volume keeps data on host
